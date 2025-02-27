@@ -7,7 +7,7 @@ API_BASE_URL = "http://localhost:8000"
 
 st.set_page_config(layout="wide", page_title="ML Lifecycle Dashboard")
 st.sidebar.title("ML Lifecycle Platform")
-selected_tab = st.sidebar.radio("Navigate", ["Experiments", "Runs", "Models", "Model Versions", "Model Stages"])
+selected_tab = st.sidebar.radio("Navigate", ["Experiments", "Runs", "Models", "Model Versions", "Model Stages", "Artifact Logging", "Model Tagging"])
 
 # -------------------- HELPER FUNCTIONS --------------------
 def fetch_data(endpoint):
@@ -187,8 +187,6 @@ elif selected_tab == "Model Versions":
             else:
                 st.warning("Model version not found.")
 
-                
-                
 # -------------------- MODEL STAGES --------------------
 elif selected_tab == "Model Stages":
     st.title("Manage Model Stages")
@@ -199,3 +197,27 @@ elif selected_tab == "Model Stages":
         if post_request(f"/models/set_stage/{model_name_stage}/{version_stage}", {"stage": stage}):
             st.success(f"Model '{model_name_stage}' version '{version_stage}' set to '{stage}'")
             st.rerun()
+
+# -------------------- ARTIFACT LOGGING --------------------
+elif selected_tab == "Artifact Logging":
+    st.title("Log Artifacts to Runs")
+    run_id_art = st.text_input("Run ID")
+    artifact_path_input = st.text_input("Artifact Path (optional)")
+    artifact_file = st.file_uploader("Upload Artifact")
+    if st.button("Log Artifact"):
+        if artifact_file:
+            temp_filename = f"temp_{artifact_file.name}"
+            with open(temp_filename, "wb") as f:
+                f.write(artifact_file.getbuffer())
+            if post_request(f"/runs/{run_id_art}/log_artifact", {"file_path": temp_filename, "artifact_path": artifact_path_input}):
+                st.success(f"Artifact {artifact_file.name} logged for run {run_id_art}")
+
+# -------------------- MODEL TAGGING --------------------
+elif selected_tab == "Model Tagging":
+    st.title("Set Model Tag")
+    model_name_tag = st.text_input("Model Name")
+    tag_key = st.text_input("Tag Key")
+    tag_value = st.text_input("Tag Value")
+    if st.button("Set Model Tag"):
+        if post_request(f"/models/{model_name_tag}/set_tag", {"key": tag_key, "value": tag_value}):
+            st.success(f"Tag {tag_key} set for model {model_name_tag}")

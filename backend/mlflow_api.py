@@ -213,6 +213,17 @@ def list_artifacts(run_id, path=None):
         return {"error": str(e)}
 
 # -------------------------------------
+# NEW: Artifact Management
+# -------------------------------------
+def log_artifact(run_id, file_path, artifact_path=None):
+    """Log an artifact (file) to a specific run"""
+    try:
+        client.log_artifact(run_id, file_path, artifact_path)
+        return {"message": f"Artifact {file_path} logged"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# -------------------------------------
 #  📌 Model Management
 # -------------------------------------
 def create_registered_model(name):

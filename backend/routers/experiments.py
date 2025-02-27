@@ -88,4 +88,3 @@ def debug_experiments():
     """Check all available experiments in MLflow."""
     experiments = get_experiments()
     return {"experiments": experiments}
-# -------------------------------------

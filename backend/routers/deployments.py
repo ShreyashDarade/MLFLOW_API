@@ -3,6 +3,7 @@ import subprocess
 from fastapi import APIRouter, HTTPException
 from backend.database import get_db_connection
 from mlflow.tracking import MlflowClient
+from mlflow import *
 
 router = APIRouter()
 client = MlflowClient(tracking_uri="http://localhost:5000")

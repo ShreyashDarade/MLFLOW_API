@@ -3,7 +3,7 @@ from backend.mlflow_api import (
     search_registered_models, create_registered_model, get_registered_model,
     update_registered_model, delete_registered_model, rename_registered_model,
     create_model_version, get_model_version, update_model_version, delete_model_version,
-    transition_model_version_stage, get_experiment
+    transition_model_version_stage, get_experiment, set_registered_model_tag
 )
 
 router = APIRouter()
@@ -88,3 +88,11 @@ def transition_model_version_stage_route(name: str, version: str, stage: str):
     if isinstance(mv, dict) and "error" in mv:
         raise HTTPException(status_code=500, detail=mv["error"])
     return {"model_version": mv}
+
+# NEW: Set a tag for a registered model
+@router.post("/{model_name}/set_tag")
+def set_model_tag_route(model_name: str, key: str, value: str):
+    response = set_registered_model_tag(model_name, key, value)
+    if "error" in response:
+        raise HTTPException(status_code=500, detail=response["error"])
+    return response

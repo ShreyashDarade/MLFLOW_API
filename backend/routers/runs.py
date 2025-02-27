@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from backend.mlflow_api import (
     get_experiments, get_runs, get_run, create_run, delete_run, restore_run,
-    log_metric, log_param, list_artifacts
+    log_metric, log_param, list_artifacts, log_artifact
 )
 
 router = APIRouter()
@@ -114,3 +114,13 @@ def list_artifacts_route(run_id: str):
     if isinstance(artifacts, dict) and "error" in artifacts:
         raise HTTPException(status_code=500, detail=artifacts["error"])
     return {"artifacts": artifacts}
+
+# -------------------------------------
+# NEW: Log Artifact to Run
+# -------------------------------------
+@router.post("/{run_id}/log_artifact")
+def log_artifact_route(run_id: str, file_path: str, artifact_path: str = None):
+    response = log_artifact(run_id, file_path, artifact_path)
+    if "error" in response:
+         raise HTTPException(status_code=500, detail=response["error"])
+    return response
